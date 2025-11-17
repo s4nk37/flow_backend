@@ -1,142 +1,164 @@
-# Flow Todo Backend
+# 📝 Flow Todo Backend
 
-AA lightweight, modular FastAPI backend for managing Todo items.
-Built with Poetry, SQLAlchemy, Pydantic, and Alembic, following a clean, scalable project structure.
+A lightweight, modular FastAPI backend for managing Todo items.  
+Built with **Poetry**, **SQLAlchemy**, **Pydantic**, and **Alembic**, following a clean, scalable project structure.  
 This backend powers the Flow mobile app.
+
+---
 
 ## 🚀 Features
 
-- FastAPI-based REST API
-- SQLAlchemy ORM + Alembic migrations
-- Pydantic request/response models
-- Modular routing (versioned API)
-- CRUD endpoints for Todo items
-- Ready for deployment (Uvicorn / Gunicorn)
-- Poetry for dependency + environment management
-- Clear project layout to ease extension and DB integration
-- Tests with pytest
+- ⚡ FastAPI-based REST API
+- 🗄️ SQLAlchemy ORM + Alembic migrations
+- 📦 Pydantic request/response models
+- 🛠️ Modular routing (versioned API)
+- ✅ CRUD endpoints for Todo items
+- 🚀 Ready for deployment (Uvicorn / Gunicorn)
+- 📦 Poetry for dependency & environment management
+- 🧩 Clear project layout to ease extension and DB integration
+- 🧪 Tests with `pytest`
 
-## 📦 Tech Stack
+---
 
-- FastAPI
-- SQLAlchemy
-- Alembic
-- Pydantic
-- Poetry
-- SQLite / PostgreSQL (future-ready)
+## 🛠️ Tech Stack
+
+- 🐍 Python 3.10+
+- ⚡ FastAPI
+- 🗄️ SQLAlchemy
+- 🔄 Alembic
+- 📦 Pydantic
+- 📦 Poetry
+- 📝 SQLite / PostgreSQL (future-ready)
+
+---
 
 ## 📁 Project Structure
 
-```
+\`\`\`
 flow_backend/
 ├── alembic
-│   ├── env.py
-│   ├── README
-│   ├── script.py.mako
-│   └── versions/
+│ ├── env.py
+│ ├── README
+│ ├── script.py.mako
+│ └── versions/
 ├── alembic.ini
 ├── app
-│   ├── __init__.py
-│   ├── api/
-│   │   └── v1/
-│   │       ├── endpoints/
-│   │       │   └── __init__.py
-│   │       └── router.py
-│   ├── core/
-│   │   ├── config.py
-│   │   └── security.py
-│   ├── database.py
-│   ├── db/
-│   │   ├── base.py
-│   │   └── session.py
-│   ├── main.py
-│   ├── models/
-│   │   └── todo.py
-│   ├── routes/
-│   │   └── todo.py
-│   ├── schemas/
-│   │   ├── todo.py
-│   │   └── todos_response.py
-│   └── utils/
-│       └── logger.py
+│ ├── **init**.py
+│ ├── api
+│ │ ├── **init**.py
+│ │ └── v1
+│ │ ├── endpoints
+│ │ │ ├── **init**.py
+│ │ │ └── todo.py
+│ │ └── router.py
+│ ├── core
+│ │ ├── **init**.py
+│ │ ├── config.py # Settings, ENV, JWT config
+│ │ └── security.py # JWT create/verify, password hashing
+│ ├── db
+│ │ ├── **init**.py
+│ │ ├── base.py # Base metadata (SQLAlchemy models import)
+│ │ └── session.py # SessionLocal, engine
+│ ├── main.py # FastAPI initialization, include router
+│ ├── models
+│ │ ├── **init**.py
+│ │ └── todo.py # SQLAlchemy model
+│ ├── schemas
+│ │ ├── todo.py
+│ │ └── todos_response.py
+│ └── utils
+│ ├── **init**.py
+│ └── logger.py # Logging utility
 ├── LICENSE
 ├── poetry.lock
 ├── pyproject.toml
 └── README.md
-```
+\`\`\`
 
-## Prerequisites (macOS)
+---
 
-- Python 3.10+ (or compatible)
-- git
-- Optional: virtualenv / venv
+## ⚡ Prerequisites (macOS)
 
-## Quick start (macOS)
+- 🐍 Python 3.10+ (or compatible)
+- 🔧 git
+- 🛠️ Optional: `virtualenv` / `venv`
 
-1. Clone and enter project
+---
 
-```bash
+## 🏁 Quick Start (macOS)
+
+1. **Clone and enter project**
+
+\`\`\`bash
 git clone <repo-url>
 cd flow_backend
-```
+\`\`\`
 
-2. Install Poetry
+2. **Install Poetry**
 
-```bash
+\`\`\`bash
 pip install poetry
-```
+\`\`\`
 
-3. Install dependencies & activate virtual environment
+3. **Install dependencies & activate virtual environment**
 
-```bash
+\`\`\`bash
 poetry install
 poetry shell
-```
+\`\`\`
 
-4. Run the development server
+4. **Run the development server**
 
-```bash
+\`\`\`bash
 uvicorn app.main:app --reload
-# or, if your entrypoint differs, adjust the module path
-```
 
-5. Open the interactive docs
+# Adjust module path if your entrypoint differs
 
-- Swagger UI: http://127.0.0.1:8000/docs
-- ReDoc: http://127.0.0.1:8000/redoc
+\`\`\`
 
-## API (typical endpoints)
+5. **Open the interactive docs**
 
-- GET /todos — list todos
-- POST /todos — create a todo
-- GET /todos/{id} — get todo by id
-- PUT /todos/{id} — update todo
-- DELETE /todos/{id} — delete todo
+- 🖥️ Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- 📑 ReDoc: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
-Example create:
+---
 
-```bash
+## 📡 API Endpoints (typical)
+
+- `GET /todos` — list todos
+- `POST /todos` — create a todo
+- `GET /todos/{id}` — get todo by id
+- `PUT /todos/{id}` — update todo
+- `DELETE /todos/{id}` — delete todo
+
+**Example: Create a Todo**
+
+\`\`\`bash
 curl -X POST http://127.0.0.1:8000/todos \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Buy milk","completed":false}'
-```
+ -H "Content-Type: application/json" \
+ -d '{"title":"Buy milk","completed":false}'
+\`\`\`
 
-## Tests
+---
+
+## 🧪 Tests
 
 Run unit tests:
 
-```bash
+\`\`\`bash
 pytest -q
-```
+\`\`\`
+
+---
 
 ## 🤝 Contributing
 
-- Open issues for bugs or enhancements
+- 🐛 Open issues for bugs or enhancements
+- 📝 Submit focused PRs
+- 🎨 Ensure code is formatted (`black`, `isort` recommended)
 
-- Submit focused PRs
-
-- Ensure code is formatted (black, isort recommended)
+---
 
 ## 📄 License
 
-MIT License — see LICENSE.
+MIT License — see LICENSE
