@@ -1,6 +1,6 @@
-__pycache__
-app.egg-info
+__pycache__/
 *.pyc
+app.egg-info
 .mypy_cache
 .coverage
 htmlcov
