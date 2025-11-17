@@ -34,7 +34,7 @@ This backend powers the Flow mobile app.
 
 ## 📁 Project Structure
 
-\`\`\`
+```
 flow_backend/
 ├── alembic
 │ ├── env.py
@@ -73,7 +73,7 @@ flow_backend/
 ├── poetry.lock
 ├── pyproject.toml
 └── README.md
-\`\`\`
+```
 
 ---
 
@@ -89,32 +89,32 @@ flow_backend/
 
 1. **Clone and enter project**
 
-\`\`\`bash
+```bash
 git clone <repo-url>
 cd flow_backend
-\`\`\`
+```
 
 2. **Install Poetry**
 
-\`\`\`bash
+```bash
 pip install poetry
-\`\`\`
+```
 
 3. **Install dependencies & activate virtual environment**
 
-\`\`\`bash
+```bash
 poetry install
 poetry shell
-\`\`\`
+```
 
 4. **Run the development server**
 
-\`\`\`bash
+```bash
 uvicorn app.main:app --reload
 
 # Adjust module path if your entrypoint differs
 
-\`\`\`
+```
 
 5. **Open the interactive docs**
 
@@ -133,11 +133,11 @@ uvicorn app.main:app --reload
 
 **Example: Create a Todo**
 
-\`\`\`bash
+```bash
 curl -X POST http://127.0.0.1:8000/todos \
  -H "Content-Type: application/json" \
  -d '{"title":"Buy milk","completed":false}'
-\`\`\`
+```
 
 ---
 
@@ -145,9 +145,9 @@ curl -X POST http://127.0.0.1:8000/todos \
 
 Run unit tests:
 
-\`\`\`bash
+```bash
 pytest -q
-\`\`\`
+```
 
 ---
 
