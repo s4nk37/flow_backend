@@ -1,14 +1,69 @@
-# flow_backend
+# Flow Todo Backend
 
-A lightweight, modular FastAPI backend for managing Todo items. Built as a learning project to demonstrate clean structure, Pydantic models, routing, and basic CRUD operations with future SQLite support. This service is intended to power the Flow mobile app.
+AA lightweight, modular FastAPI backend for managing Todo items.
+Built with Poetry, SQLAlchemy, Pydantic, and Alembic, following a clean, scalable project structure.
+This backend powers the Flow mobile app.
 
-## Features
+## 🚀 Features
 
 - FastAPI-based REST API
+- SQLAlchemy ORM + Alembic migrations
 - Pydantic request/response models
+- Modular routing (versioned API)
 - CRUD endpoints for Todo items
+- Ready for deployment (Uvicorn / Gunicorn)
+- Poetry for dependency + environment management
 - Clear project layout to ease extension and DB integration
 - Tests with pytest
+
+## 📦 Tech Stack
+
+- FastAPI
+- SQLAlchemy
+- Alembic
+- Pydantic
+- Poetry
+- SQLite / PostgreSQL (future-ready)
+
+## 📁 Project Structure
+
+```
+flow_backend/
+├── alembic
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions/
+├── alembic.ini
+├── app
+│   ├── __init__.py
+│   ├── api/
+│   │   └── v1/
+│   │       ├── endpoints/
+│   │       │   └── __init__.py
+│   │       └── router.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── database.py
+│   ├── db/
+│   │   ├── base.py
+│   │   └── session.py
+│   ├── main.py
+│   ├── models/
+│   │   └── todo.py
+│   ├── routes/
+│   │   └── todo.py
+│   ├── schemas/
+│   │   ├── todo.py
+│   │   └── todos_response.py
+│   └── utils/
+│       └── logger.py
+├── LICENSE
+├── poetry.lock
+├── pyproject.toml
+└── README.md
+```
 
 ## Prerequisites (macOS)
 
@@ -25,17 +80,17 @@ git clone <repo-url>
 cd flow_backend
 ```
 
-2. Create and activate virtual environment
+2. Install Poetry
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+pip install poetry
 ```
 
-3. Install dependencies
+3. Install dependencies & activate virtual environment
 
 ```bash
-pip install -r requirements.txt
+poetry install
+poetry shell
 ```
 
 4. Run the development server
@@ -74,11 +129,14 @@ Run unit tests:
 pytest -q
 ```
 
-## Contributing
+## 🤝 Contributing
 
-- Open issues for bugs or enhancement requests
-- Create small, focused PRs with tests where applicable
+- Open issues for bugs or enhancements
 
-## License
+- Submit focused PRs
 
-MIT License — see LICENSE file (or add one if missing).
+- Ensure code is formatted (black, isort recommended)
+
+## 📄 License
+
+MIT License — see LICENSE.

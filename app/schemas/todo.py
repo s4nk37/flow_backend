@@ -11,7 +11,7 @@ class TodoCreate(TodoBase):
     pass
 
 class TodoResponse(TodoBase):
-    id: int
+    id: str
     createdAt: datetime
     updatedAt: Optional[datetime]
     completedAt: Optional[datetime]
