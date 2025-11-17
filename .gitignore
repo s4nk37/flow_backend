@@ -1,8 +1,81 @@
+# ----------------------------------------
+# Python cache & compiled files
+# ----------------------------------------
 __pycache__/
 *.pyc
-app.egg-info
-.mypy_cache
+*.pyo
+*.pyd
+*.pkl
+*.pyc.*
+*.so
+
+# ----------------------------------------
+# Virtual environments
+# ----------------------------------------
+.venv/
+env/
+venv/
+
+# ----------------------------------------
+# macOS system files
+# ----------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ----------------------------------------
+# Poetry
+# ----------------------------------------
+# poetry.lock
+
+# (OPTIONAL – keep if you don’t want lock file in repo)
+# If you want to commit poetry.lock, remove above line.
+
+# ----------------------------------------
+# Coverage & test artifacts
+# ----------------------------------------
 .coverage
-htmlcov
-.cache
-.venv
+.coverage.*
+htmlcov/
+.cache/
+pytest_cache/
+
+# ----------------------------------------
+# Mypy & type checkers
+# ----------------------------------------
+.mypy_cache/
+.dmypy.json
+pyrightconfig.json
+
+# ----------------------------------------
+# Build & distribution
+# ----------------------------------------
+build/
+dist/
+*.egg-info/
+app.egg-info/
+*.spec
+
+# ----------------------------------------
+# Logs
+# ----------------------------------------
+*.log
+
+# ----------------------------------------
+# Environment variables
+# ----------------------------------------
+.env
+.env.*
+!.env.example   # keep example env file
+
+# ----------------------------------------
+# SQLite database (optional)
+# ----------------------------------------
+*.db
+*.sqlite3
+
+# ----------------------------------------
+# Alembic migration cache (not migrations)
+# ----------------------------------------
+alembic/__pycache__/
+
