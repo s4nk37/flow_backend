@@ -1,13 +1,10 @@
 from fastapi import FastAPI
-from app.database import engine, Base
-from app.routes.todo import router as todo_router
+from app.api.v1.router import api_router
+from app.db.session import engine, Base
 
-app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-app.include_router(todo_router)
+app = FastAPI(title="Flow Todo API")
 
-@app.get("/")
-def home():
-    return {"message": "Flow Backend API is working 🚀"}
+app.include_router(api_router, prefix="/api/v1")

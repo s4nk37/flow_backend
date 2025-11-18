@@ -1,0 +1,14 @@
+# app/api/v1/router.py
+from fastapi import APIRouter
+from app.api.v1.endpoints import todos_endpoint
+
+
+api_router = APIRouter()
+
+
+@api_router.get("/")
+def home():
+    return {"message": "Flow Backend API is working 🚀"}
+
+
+api_router.include_router(todos_endpoint.api_router, prefix="")
