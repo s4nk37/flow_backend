@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, DateTime
 from sqlalchemy.sql import func
-from app.db.session import Base
+from app.database.session import Base
+from sqlalchemy.orm import relationship
 
 class TodoModel(Base):
     __tablename__ = "todos"
@@ -15,3 +16,6 @@ class TodoModel(Base):
     reminder_at = Column(DateTime(timezone=True), nullable=True)
     is_deleted = Column(Boolean, default=False)
     is_synced = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey("users.id"))  # associate with user
+
+    user = relationship("UserModel", back_populates="todos")

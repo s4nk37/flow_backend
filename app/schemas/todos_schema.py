@@ -7,5 +7,6 @@ from datetime import datetime
 class TodosSchema(BaseModel):
     todos: List[TodoSchema]
     pdated_at: Optional[datetime] = Field(alias="updatedAt")
+    user_id: int
 
     model_config = {"from_attributes": True}

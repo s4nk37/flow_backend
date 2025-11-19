@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.v1.router import api_router
-from app.db.session import engine, Base
+from app.database.session import engine, Base
 
 
 Base.metadata.create_all(bind=engine)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
-from app.db.session import get_db
+from app.database.session import get_db
 from app.models.todo_model import TodoModel
 from app.schemas.todo_schema import TodoSchema
 from app.schemas.todos_schema import TodosSchema
