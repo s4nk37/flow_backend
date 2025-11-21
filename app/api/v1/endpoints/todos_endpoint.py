@@ -1,45 +1,74 @@
-from fastapi import APIRouter, Depends
+from typing import Optional, List
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
 from app.core.security import get_current_user
 from app.database.session import get_db
 from app.models.todo_model import TodoModel
-from app.schemas.todo_schema import TodoSchema
+from app.models.user_model import UserModel
+from app.schemas.todo_schema import TodoCreate, TodoUpdate, TodoResponse
 from app.schemas.todos_schema import TodosSchema
 
 api_router = APIRouter(tags=["Todos"])
 
 
-# Retrieve all todos
+# Retrieve all todos with pagination and filtering
 @api_router.get("/todos", response_model=TodosSchema)
 def read_todos(
+    skip: int = 0,
+    limit: int = 20,
+    is_completed: Optional[bool] = None,
+    priority: Optional[int] = None,
     db: Session = Depends(get_db),
-    current_user: int = Depends(get_current_user),
+    current_user: UserModel = Depends(get_current_user),
 ):
-    todos_list = db.query(TodoModel).filter(TodoModel.user_id == current_user).all()
+    query = db.query(TodoModel).filter(TodoModel.user_id == current_user.id)
+
+    if is_completed is not None:
+        query = query.filter(TodoModel.is_completed == is_completed)
+    
+    if priority is not None:
+        query = query.filter(TodoModel.priority == priority)
+
+    todos_list = query.offset(skip).limit(limit).all()
 
     return TodosSchema(
         todos=todos_list, updatedAt=int(datetime.now(timezone.utc).timestamp())
     )
 
 
+# Retrieve a single todo
+@api_router.get("/todos/{todo_id}", response_model=TodoResponse)
+def read_todo(
+    todo_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserModel = Depends(get_current_user),
+):
+    todo = db.query(TodoModel).filter(TodoModel.id == todo_id, TodoModel.user_id == current_user.id).first()
+    if not todo:
+        raise HTTPException(status_code=404, detail="Todo not found")
+    return todo
+
+
 # Create a new todo
-@api_router.post("/todos", response_model=TodoSchema)
+@api_router.post("/todos", response_model=TodoResponse)
 def create_todo(
-    payload: TodoSchema,
-    current_user: int = Depends(get_current_user),
+    payload: TodoCreate,
+    current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     new_todo = TodoModel(
         title=payload.title,
         description=payload.description,
+        priority=payload.priority,
         reminder_at=payload.reminder_at,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
-        is_completed=False,
-        is_deleted=False,
-        is_synced=False,
+        is_completed=payload.is_completed,
+        is_deleted=payload.is_deleted,
+        is_synced=payload.is_synced,
+        user_id=current_user.id,
     )
 
     db.add(new_todo)
@@ -50,26 +79,23 @@ def create_todo(
 
 
 # Update an existing todo
-@api_router.put("/todos/{todo_id}", response_model=TodoSchema)
+@api_router.put("/todos/{todo_id}", response_model=TodoResponse)
 def update_todo(
     todo_id: int,
-    payload: TodoSchema,
-    current_user: int = Depends(get_current_user),
+    payload: TodoUpdate,
+    current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
+    todo = db.query(TodoModel).filter(TodoModel.id == todo_id, TodoModel.user_id == current_user.id).first()
     if not todo:
-        return {"error": "Todo not found"}
+        raise HTTPException(status_code=404, detail="Todo not found")
 
-    todo.title = payload.title
-    todo.description = payload.description
-    todo.is_completed = payload.is_completed
+    update_data = payload.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(todo, key, value)
+
     todo.updated_at = datetime.now(timezone.utc)
-    todo.completed_at = payload.completed_at
-    todo.reminder_at = payload.reminder_at
-    todo.is_deleted = payload.is_deleted
-    todo.is_synced = payload.is_synced
-
+    
     db.commit()
     db.refresh(todo)
 
@@ -80,12 +106,12 @@ def update_todo(
 @api_router.delete("/todos/{todo_id}", response_model=dict)
 def delete_todo(
     todo_id: int,
-    current_user: int = Depends(get_current_user),
+    current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
+    todo = db.query(TodoModel).filter(TodoModel.id == todo_id, TodoModel.user_id == current_user.id).first()
     if not todo:
-        return {"error": "Todo not found"}
+        raise HTTPException(status_code=404, detail="Todo not found")
 
     db.delete(todo)
     db.commit()
@@ -97,8 +123,8 @@ def delete_todo(
 @api_router.delete("/todos", response_model=dict)
 def delete_all_todos(
     db: Session = Depends(get_db),
-    current_user: int = Depends(get_current_user),
+    current_user: UserModel = Depends(get_current_user),
 ):
-    db.query(TodoModel).delete()
+    db.query(TodoModel).filter(TodoModel.user_id == current_user.id).delete()
     db.commit()
     return {"message": "All todos deleted successfully"}
