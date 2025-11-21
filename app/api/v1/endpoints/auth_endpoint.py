@@ -13,6 +13,7 @@ from app.core.security import (
 )
 from app.database.user_crud import create_user, get_user_by_email
 from app.utils.timezone_helper import make_aware
+from app.utils.logger import logger
 
 router = APIRouter()
 
@@ -59,7 +60,7 @@ def login(payload: UserLogin, db: Session = Depends(get_db), request: Request = 
 
 @router.post("/refresh")
 def refresh_tokens(refresh_token: str = Body(...), db: Session = Depends(get_db)):
-    print("Refresh token received:", refresh_token)  # Debugging line
+    logger.info(f"Refresh token received: {refresh_token}")  # Debugging line
 
     db_token = (
         db.query(RefreshTokenModel)

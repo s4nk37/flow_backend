@@ -26,11 +26,13 @@ def verify_password(plain: str, hashed: str) -> bool:
 # ----------------------------
 # JWT Settings
 # ----------------------------
-SECRET_KEY = "your-secret-key"
-ALGORITHM = "HS256"
+from app.core.config import settings
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 10  # short-lived
-REFRESH_TOKEN_EXPIRE_DAYS = 30
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 
 
 def create_access_token(data: dict):
