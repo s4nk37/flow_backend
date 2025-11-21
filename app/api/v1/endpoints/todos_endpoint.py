@@ -2,18 +2,22 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
+from app.core.security import get_current_user
 from app.database.session import get_db
 from app.models.todo_model import TodoModel
 from app.schemas.todo_schema import TodoSchema
 from app.schemas.todos_schema import TodosSchema
 
-api_router = APIRouter(tags=["v1 Todos"])
+api_router = APIRouter(tags=["Todos"])
 
 
 # Retrieve all todos
 @api_router.get("/todos", response_model=TodosSchema)
-def read_todos(db: Session = Depends(get_db)):
-    todos_list = db.query(TodoModel).all()
+def read_todos(
+    db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user),
+):
+    todos_list = db.query(TodoModel).filter(TodoModel.user_id == current_user).all()
 
     return TodosSchema(
         todos=todos_list, updatedAt=int(datetime.now(timezone.utc).timestamp())
@@ -22,7 +26,11 @@ def read_todos(db: Session = Depends(get_db)):
 
 # Create a new todo
 @api_router.post("/todos", response_model=TodoSchema)
-def create_todo(payload: TodoSchema, db: Session = Depends(get_db)):
+def create_todo(
+    payload: TodoSchema,
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     new_todo = TodoModel(
         title=payload.title,
         description=payload.description,
@@ -43,7 +51,12 @@ def create_todo(payload: TodoSchema, db: Session = Depends(get_db)):
 
 # Update an existing todo
 @api_router.put("/todos/{todo_id}", response_model=TodoSchema)
-def update_todo(todo_id: int, payload: TodoSchema, db: Session = Depends(get_db)):
+def update_todo(
+    todo_id: int,
+    payload: TodoSchema,
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
     if not todo:
         return {"error": "Todo not found"}
@@ -65,7 +78,11 @@ def update_todo(todo_id: int, payload: TodoSchema, db: Session = Depends(get_db)
 
 # Delete a todo
 @api_router.delete("/todos/{todo_id}", response_model=dict)
-def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+def delete_todo(
+    todo_id: int,
+    current_user: int = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
     todo = db.query(TodoModel).filter(TodoModel.id == todo_id).first()
     if not todo:
         return {"error": "Todo not found"}
@@ -78,7 +95,10 @@ def delete_todo(todo_id: int, db: Session = Depends(get_db)):
 
 # Delete All Todos (For Testing Purposes)
 @api_router.delete("/todos", response_model=dict)
-def delete_all_todos(db: Session = Depends(get_db)):
+def delete_all_todos(
+    db: Session = Depends(get_db),
+    current_user: int = Depends(get_current_user),
+):
     db.query(TodoModel).delete()
     db.commit()
     return {"message": "All todos deleted successfully"}

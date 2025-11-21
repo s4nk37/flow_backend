@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -29,8 +29,8 @@ def verify_password(plain: str, hashed: str) -> bool:
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 10       # short-lived
-REFRESH_TOKEN_EXPIRE_DAYS = 30  
+ACCESS_TOKEN_EXPIRE_MINUTES = 10  # short-lived
+REFRESH_TOKEN_EXPIRE_DAYS = 30
 
 
 def create_access_token(data: dict):
@@ -42,22 +42,24 @@ def create_access_token(data: dict):
 
 def create_refresh_token():
     import uuid
+
     return str(uuid.uuid4())
 
 
 # ----------------------------
 # Auth Dependency
 # ----------------------------
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+bearer_scheme = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    token: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
 ):
-    """Extract user from JWT token and return user object."""
+    raw_token = token.credentials
 
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(raw_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = payload.get("sub")
 
         if user_id is None:
