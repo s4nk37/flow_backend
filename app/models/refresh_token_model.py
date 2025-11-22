@@ -19,7 +19,7 @@ class RefreshTokenModel(Base):
     __tablename__ = "refresh_tokens"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    user_id = Column(String, ForeignKey("users.id"))
     token = Column(String, unique=True, index=True)
     user_agent = Column(String, nullable=True)
 

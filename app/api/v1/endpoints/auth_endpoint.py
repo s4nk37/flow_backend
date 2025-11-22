@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from app.models.refresh_token_model import RefreshTokenModel
 from app.models.user_model import UserModel
-from app.schemas.user_schema import UserCreate, UserLogin, UserResponse
+from app.schemas.user_schema import UserCreate, UserLogin, UserResponse, EmailCheck
 from app.database.session import get_db
 from app.core.security import (
     create_refresh_token,
@@ -25,8 +25,14 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    user = create_user(db, payload.email, payload.password)
+    user = create_user(db, payload.email, payload.password, payload.name)
     return user
+
+
+@router.post("/check-email")
+def check_email(payload: EmailCheck, db: Session = Depends(get_db)):
+    existing = get_user_by_email(db, payload.email)
+    return {"exists": bool(existing)}
 
 
 @router.post("/login")

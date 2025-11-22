@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -29,7 +29,7 @@ class TodoUpdate(BaseModel):
 
 
 class TodoResponse(TodoBase):
-    id: int
+    id: str
     created_at: datetime = Field(alias="createdAt")
     updated_at: Optional[datetime] = Field(alias="updatedAt")
     completed_at: Optional[datetime] = Field(alias="completedAt")
@@ -38,3 +38,12 @@ class TodoResponse(TodoBase):
         "from_attributes": True,
         "populate_by_name": True,
     }
+
+
+class BulkTodoCreate(BaseModel):
+    todos: List[TodoCreate]
+
+
+class BulkTodoResponse(BaseModel):
+    created: List[TodoResponse]
+    failed: List[dict]  # List of {index: int, error: str}

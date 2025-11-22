@@ -1,4 +1,5 @@
 from typing import Optional, List
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
@@ -7,7 +8,7 @@ from app.core.security import get_current_user
 from app.database.session import get_db
 from app.models.todo_model import TodoModel
 from app.models.user_model import UserModel
-from app.schemas.todo_schema import TodoCreate, TodoUpdate, TodoResponse
+from app.schemas.todo_schema import TodoCreate, TodoUpdate, TodoResponse, BulkTodoCreate, BulkTodoResponse
 from app.schemas.todos_schema import TodosSchema
 
 api_router = APIRouter(tags=["Todos"])
@@ -41,7 +42,7 @@ def read_todos(
 # Retrieve a single todo
 @api_router.get("/todos/{todo_id}", response_model=TodoResponse)
 def read_todo(
-    todo_id: int,
+    todo_id: str,
     db: Session = Depends(get_db),
     current_user: UserModel = Depends(get_current_user),
 ):
@@ -59,6 +60,7 @@ def create_todo(
     db: Session = Depends(get_db),
 ):
     new_todo = TodoModel(
+        id=str(uuid.uuid4()),
         title=payload.title,
         description=payload.description,
         priority=payload.priority,
@@ -77,11 +79,46 @@ def create_todo(
 
     return new_todo
 
+@api_router.post("/todos/bulk", response_model=BulkTodoResponse)
+def bulk_create_todos(
+    payload: BulkTodoCreate,
+    current_user: UserModel = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    created = []
+    failed = []
+    for idx, todo_data in enumerate(payload.todos):
+        try:
+            new_todo = TodoModel(
+                id=str(uuid.uuid4()),
+                title=todo_data.title,
+                description=todo_data.description,
+                priority=todo_data.priority,
+                reminder_at=todo_data.reminder_at,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+                is_completed=todo_data.is_completed,
+                is_deleted=todo_data.is_deleted,
+                is_synced=todo_data.is_synced,
+                user_id=current_user.id,
+            )
+            db.add(new_todo)
+            db.flush()
+            created.append(new_todo)
+        except Exception as e:
+            db.rollback()
+            failed.append({"index": idx, "error": str(e)})
+    db.commit()
+    for todo in created:
+        db.refresh(todo)
+    return BulkTodoResponse(created=created, failed=failed)
+
+
 
 # Update an existing todo
 @api_router.put("/todos/{todo_id}", response_model=TodoResponse)
 def update_todo(
-    todo_id: int,
+    todo_id: str,
     payload: TodoUpdate,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
@@ -105,7 +142,7 @@ def update_todo(
 # Delete a todo
 @api_router.delete("/todos/{todo_id}", response_model=dict)
 def delete_todo(
-    todo_id: int,
+    todo_id: str,
     current_user: UserModel = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

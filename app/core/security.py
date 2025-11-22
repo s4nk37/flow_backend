@@ -67,7 +67,7 @@ def get_current_user(
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-        user_id = int(user_id)
+        # user_id = int(user_id)  <-- removed for UUID support
 
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
