@@ -66,7 +66,7 @@ def success_response(
     )
     return JSONResponse(
         status_code=status_code,
-        content=response.model_dump(exclude_none=True)
+        content=response.model_dump(mode='json', exclude_none=True)
     )
 
 
@@ -96,7 +96,7 @@ def error_response(
     )
     return JSONResponse(
         status_code=status_code,
-        content=response.model_dump(exclude_none=True)
+        content=response.model_dump(mode='json', exclude_none=True)
     )
 
 

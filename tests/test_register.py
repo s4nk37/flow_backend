@@ -36,8 +36,10 @@ def test_register_with_name():
         "/api/v1/auth/register",
         json={"email": "test@example.com", "password": "password123", "name": "Test User"},
     )
-    assert response.status_code == 200
-    data = response.json()
+    assert response.status_code == 201
+    response_json = response.json()
+    assert response_json["success"] is True
+    data = response_json["data"]
     assert data["email"] == "test@example.com"
     assert data["name"] == "Test User"
     assert "id" in data
